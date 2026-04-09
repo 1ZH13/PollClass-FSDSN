@@ -1,0 +1,10 @@
+{
+  "name": "pollclass",
+  "private": true,
+  "scripts": {
+    "install-all": "bun install && cd server && bun install && cd ../client && bun install",
+    "dev:server": "cd server && bun run dev",
+    "dev:client": "cd client && bun run dev",
+    "dev": "echo 'Run client and server in separate terminals: bun run dev:server and bun run dev:client'"
+  }
+}

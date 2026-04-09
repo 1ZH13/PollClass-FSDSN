@@ -1,0 +1,8 @@
+node_modules
+bun.lockb
+dist
+.vscode
+.DS_Store
+.env
+client/node_modules
+server/node_modules
