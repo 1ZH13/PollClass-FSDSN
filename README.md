@@ -2,20 +2,22 @@
 
 ## Resumen
 
-PollClass es una aplicación full stack para crear encuestas en tiempo real durante la clase. El profesor crea encuestas, comparte el código con los estudiantes y los resultados se actualizan mediante polling HTTP.
+PollClass es una aplicación full stack para crear encuestas en tiempo real durante la clase. El profesor crea encuestas, comparte un código con los estudiantes y los resultados se actualizan mediante polling HTTP.
+
+Esta versión usa Bun puro en el backend y MongoDB con el driver oficial, sin Hono ni Mongoose.
 
 ## Stack
 
 - Frontend: React + Vite
-- Backend: Bun + Hono
-- Base de datos: MongoDB + Mongoose
+- Backend: Bun nativo
+- Base de datos: MongoDB (driver oficial)
 - Estilos: Tailwind CSS
 - Gráficos: Recharts
 
 ## Estructura del proyecto
 
 - `client/` — aplicación React
-- `server/` — API Bun con rutas de encuestas y votos
+- `server/` — API Bun con rutas nativas y acceso directo a MongoDB
 - `.env.example` — ejemplo de configuración de entorno
 - `.gitignore` — archivos y carpetas ignoradas
 
@@ -49,12 +51,12 @@ Abrir dos terminales:
 
 - Terminal 1 (backend):
   ```bash
-  bun run dev:server
+  bun run dev
   ```
 
 - Terminal 2 (frontend):
   ```bash
-  bun run dev:client
+  bun run dev
   ```
 
 Luego abrir:
@@ -64,6 +66,9 @@ Luego abrir:
 
 ## Endpoints principales
 
+- `POST /api/auth/register` — registrar usuario
+- `POST /api/auth/login` — iniciar sesión
+- `GET /api/auth/me` — obtener usuario autenticado
 - `POST /api/polls` — crear encuesta
 - `GET /api/polls` — listar encuestas
 - `GET /api/polls/:id` — obtener encuesta por ID
@@ -75,10 +80,11 @@ Luego abrir:
 
 ## Notas
 
-- La validación asegura un solo voto por estudiante (`voterName`) por encuesta.
-- Los resultados del profesor se actualizan cada 3 segundos.
-- Los resultados del estudiante se actualizan cada 5 segundos después de votar.
+- La validación asegura un solo voto por estudiante (`voterEmail`) por encuesta.
+- El login es role-agnóstico; el backend redirige según el rol guardado.
+- El registro pide el rol sólo una vez.
+- Las rutas de backend usan Bun y MongoDB directamente.
 
 ---
 
-Esta implementación está lista para desarrollar y continuar durante la sesión práctica.
+Esta implementación está lista y ya se ha empujado al remoto en la rama `main`.
