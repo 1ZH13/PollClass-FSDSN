@@ -1,10 +1,10 @@
-import User from '../models/User.ts';
+import { users } from '../config/db.ts';
 
-export async function getUserFromRequest(c) {
-  const authorization = c.req.header('Authorization') || '';
+export async function getUserFromRequest(req) {
+  const authorization = req.headers.get('Authorization') || '';
   const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : '';
   if (!token) {
     return null;
   }
-  return (await User.findOne({ token }).lean()) as any;
+  return await users.findOne({ token });
 }

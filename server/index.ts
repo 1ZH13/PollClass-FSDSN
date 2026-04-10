@@ -1,35 +1,47 @@
 import 'dotenv/config';
-import { Hono } from 'hono';
 import { serve } from 'bun';
-import pollsRoutes from './routes/polls.ts';
-import votesRoutes from './routes/votes.ts';
-import authRoutes from './routes/auth.ts';
 import { connectDatabase } from './config/db.ts';
-
-const app = new Hono();
-
-app.use('*', async (c, next) => {
-  await next();
-  c.header('Access-Control-Allow-Origin', '*');
-  c.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
-  c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  return c;
-});
-
-app.options('*', (c) => c.text('OK'));
-app.route('/api/auth', authRoutes);
-app.route('/api/polls', pollsRoutes);
-app.route('/api/polls', votesRoutes);
-
-app.onError((err, c) => {
-  console.error(err);
-  return c.json({ message: 'Internal server error' }, 500);
-});
-
-connectDatabase();
+import { authHandler } from './routes/auth.ts';
+import { pollsHandler } from './routes/polls.ts';
+import { votesHandler } from './routes/votes.ts';
+import { corsHeaders } from './utils.ts';
 
 const port = Number(process.env.PORT || 3001);
+
+await connectDatabase();
+
 serve({
   port,
-  fetch: app.fetch,
+  fetch: async (req) => {
+    const url = new URL(req.url);
+
+    if (req.method === 'OPTIONS') {
+      return new Response('OK', { headers: corsHeaders });
+    }
+
+    try {
+      if (url.pathname.startsWith('/api/auth')) {
+        return await authHandler(req);
+      }
+
+      if (url.pathname.startsWith('/api/polls') && (url.pathname.endsWith('/vote') || url.pathname.endsWith('/results'))) {
+        return await votesHandler(req);
+      }
+
+      if (url.pathname.startsWith('/api/polls')) {
+        return await pollsHandler(req);
+      }
+
+      return new Response(JSON.stringify({ message: 'Not found' }), {
+        status: 404,
+        headers: corsHeaders,
+      });
+    } catch (error) {
+      console.error(error);
+      return new Response(JSON.stringify({ message: 'Internal server error' }), {
+        status: 500,
+        headers: corsHeaders,
+      });
+    }
+  },
 });
