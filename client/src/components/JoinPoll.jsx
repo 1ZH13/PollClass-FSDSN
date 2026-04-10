@@ -17,7 +17,7 @@ function JoinPoll({ onJoin, loading }) {
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 p-3 focus:border-sky-500 focus:outline-none"
+            className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 p-3 text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none"
             placeholder="Ej: ABC123"
           />
         </div>
