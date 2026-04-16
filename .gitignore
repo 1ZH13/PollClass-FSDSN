@@ -6,3 +6,6 @@ dist
 .env
 client/node_modules
 server/node_modules
+tests/artifacts/
+playwright-report
+test-results

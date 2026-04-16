@@ -5,6 +5,12 @@
     "install-all": "bun install && cd server && bun install && cd ../client && bun install",
     "dev:server": "cd server && bun run dev",
     "dev:client": "cd client && bun run dev",
-    "dev": "echo 'Run client and server in separate terminals: bun run dev:server and bun run dev:client'"
+    "dev": "echo 'Run client and server in separate terminals: bun run dev:server and bun run dev:client'",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
   }
 }
