@@ -1,5 +1,5 @@
 {
-  "name": "pollclass-server",
+  "name": "pollclass-fsdsn-server",
   "private": true,
   "type": "module",
   "scripts": {

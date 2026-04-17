@@ -1,5 +1,5 @@
 {
-  "name": "pollclass",
+  "name": "pollclass-fsdsn",
   "private": true,
   "scripts": {
     "install-all": "bun install && cd server && bun install && cd ../client && bun install",

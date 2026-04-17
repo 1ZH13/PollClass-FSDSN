@@ -1,8 +1,8 @@
-# Documentación Técnica - LAB1DS9 (PollClass)
+# Documentación Técnica - PollClass-FSDSN
 
 ## 1. Resumen Ejecutivo
 
-LAB1DS9 es una aplicación web full stack para encuestas en vivo en aula, compuesta por:
+PollClass-FSDSN es una aplicación web full stack para encuestas en vivo en aula, compuesta por:
 
 - Frontend en React + Vite + Tailwind (carpeta client)
 - Backend en Bun con enrutamiento HTTP nativo (carpeta server)
@@ -54,7 +54,7 @@ flowchart LR
 ## 4. Estructura del Proyecto
 
 ```text
-LAB1DS9/
+PollClass-FSDSN/
   client/
     src/
       components/

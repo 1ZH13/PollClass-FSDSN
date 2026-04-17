@@ -1,8 +1,8 @@
-# PollClass — Sistema de Encuestas en Vivo
+# PollClass-FSDSN — Sistema de Encuestas en Vivo
 
 ## Resumen
 
-PollClass es una aplicación full stack para crear encuestas en tiempo real durante la clase. El profesor crea encuestas, comparte un código con los estudiantes y los resultados se actualizan mediante polling HTTP.
+PollClass-FSDSN es una aplicación full stack para crear encuestas en tiempo real durante la clase. El profesor crea encuestas, comparte un código con los estudiantes y los resultados se actualizan mediante polling HTTP.
 
 Esta versión usa Bun puro en el backend y MongoDB con el driver oficial, sin Hono ni Mongoose.
 
