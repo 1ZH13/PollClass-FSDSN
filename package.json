@@ -5,12 +5,14 @@
     "install-all": "bun install && cd server && bun install && cd ../client && bun install",
     "dev:server": "cd server && bun run dev",
     "dev:client": "cd client && bun run dev",
-    "dev": "echo 'Run client and server in separate terminals: bun run dev:server and bun run dev:client'",
+    "dev": "concurrently \"bun run dev:server\" \"bun run dev:client\"",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "evidence:screenshots": "playwright test tests/ui/evidence-screenshots.spec.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1"
+    "@playwright/test": "^1.59.1",
+    "concurrently": "^9.2.1"
   }
 }

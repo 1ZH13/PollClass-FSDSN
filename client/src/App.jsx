@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import Landing from './pages/Landing.jsx';
 import Professor from './pages/Professor.jsx';
 import ProfessorPoll from './pages/ProfessorPoll.jsx';
@@ -9,6 +9,12 @@ import { AuthProvider, AuthContext } from './context/AuthContext.jsx';
 
 function InnerApp() {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate('/auth');
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -44,8 +50,8 @@ function InnerApp() {
             )}
             {user ? (
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-white/10 px-4 py-2 text-sm text-white/90">{user.email}</span>
-                <button onClick={logout} className="glass-button bg-rose-600/95 hover:bg-rose-500/95">
+                <span className="rounded-full bg-white/10 px-4 py-2 text-sm text-white/90">{user.fullName || user.email}</span>
+                <button onClick={handleLogout} className="glass-button bg-rose-600/95 hover:bg-rose-500/95">
                   Cerrar sesión
                 </button>
               </div>

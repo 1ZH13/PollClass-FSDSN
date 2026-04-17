@@ -8,13 +8,13 @@ test('API votes: permisos, optionIndex inválido, encuesta cerrada y voto duplic
   const studentEmail = `student-vote-${id}@test.local`;
 
   const professorRegister = await request.post(`${API_BASE}/auth/register`, {
-    data: { email: professorEmail, password, role: 'professor' },
+    data: { email: professorEmail, password, role: 'professor', firstName: 'Professor', lastName: 'Vote' },
   });
   expect(professorRegister.status()).toBe(201);
   const professorToken = (await professorRegister.json()).token as string;
 
   const studentRegister = await request.post(`${API_BASE}/auth/register`, {
-    data: { email: studentEmail, password, role: 'student' },
+    data: { email: studentEmail, password, role: 'student', firstName: 'Student', lastName: 'Vote' },
   });
   expect(studentRegister.status()).toBe(201);
   const studentToken = (await studentRegister.json()).token as string;

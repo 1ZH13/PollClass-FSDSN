@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import PollForm from '../components/PollForm.jsx';
 import PollCard from '../components/PollCard.jsx';
 import { polls } from '../services/api.js';
@@ -50,31 +50,11 @@ function Professor() {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-slate-100 p-6">
-        <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-10 shadow-xl">
-          <h1 className="text-2xl font-bold text-slate-900">Necesitas iniciar sesión</h1>
-          <p className="mt-3 text-slate-600">Inicia sesión o regístrate como profesor para administrar encuestas.</p>
-          <Link to="/auth" className="mt-6 inline-flex rounded-3xl bg-sky-600 px-6 py-3 text-white hover:bg-sky-700">
-            Ir a autenticación
-          </Link>
-        </div>
-      </div>
-    );
+    return <Navigate replace to="/auth" />;
   }
 
   if (user.role !== 'professor') {
-    return (
-      <div className="min-h-screen bg-slate-100 p-6">
-        <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-10 shadow-xl">
-          <h1 className="text-2xl font-bold text-slate-900">Acceso no autorizado</h1>
-          <p className="mt-3 text-slate-600">Debes iniciar sesión como profesor para crear y gestionar encuestas.</p>
-          <Link to="/auth" className="mt-6 inline-flex rounded-3xl bg-sky-600 px-6 py-3 text-white hover:bg-sky-700">
-            Cambiar a profesor
-          </Link>
-        </div>
-      </div>
-    );
+    return <Navigate replace to="/student" />;
   }
 
   const activePolls = pollsList.filter((poll) => poll.status === 'active');

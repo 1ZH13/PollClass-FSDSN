@@ -17,21 +17,21 @@ test('UI: guardas de rol bloquean panel incorrecto', async ({ page }) => {
   await register(page, `prof-guard-${id}@test.local`, password, 'professor');
   await expect(page).toHaveURL(/\/professor/);
   await page.goto('/student');
-  await expect(page.getByText('Acceso no autorizado')).toBeVisible();
+  await expect(page).toHaveURL(/\/professor/);
   await logout(page);
 
   await register(page, `student-guard-${id}@test.local`, password, 'student');
   await expect(page).toHaveURL(/\/student/);
   await page.goto('/professor');
-  await expect(page.getByText('Acceso no autorizado')).toBeVisible();
+  await expect(page).toHaveURL(/\/student/);
 });
 
 test('UI: acceso sin sesión en profesor y estudiante pide autenticación', async ({ page }) => {
   await page.goto('/professor');
-  await expect(page.getByText('Necesitas iniciar sesión')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Ir a autenticación' })).toBeVisible();
+  await expect(page).toHaveURL(/\/auth/);
+  await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
 
   await page.goto('/student');
-  await expect(page.getByText('Necesitas iniciar sesión')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Ir a autenticación' })).toBeVisible();
+  await expect(page).toHaveURL(/\/auth/);
+  await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
 });

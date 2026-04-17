@@ -47,16 +47,22 @@ cd ../client && bun install
 
 ## Ejecutar el proyecto
 
-Abrir dos terminales:
+Con un solo comando desde la raiz:
 
-- Terminal 1 (backend):
+```bash
+bun run dev
+```
+
+Si necesitas correr por separado:
+
+- Backend:
   ```bash
-  bun run dev
+  bun run dev:server
   ```
 
-- Terminal 2 (frontend):
+- Frontend:
   ```bash
-  bun run dev
+  bun run dev:client
   ```
 
 Luego abrir:
@@ -77,6 +83,75 @@ Luego abrir:
 - `DELETE /api/polls/:id` — eliminar encuesta
 - `POST /api/polls/:id/vote` — registrar un voto
 - `GET /api/polls/:id/results` — obtener resultados actuales
+
+## Evidencias para entrega
+
+Capturas requeridas:
+
+- Landing: `docs/screenshots/01-landing.png`
+- Vista profesor: `docs/screenshots/02-vista-profesor.png`
+- Vista estudiante: `docs/screenshots/03-vista-estudiante.png`
+
+Generarlas automaticamente con Playwright:
+
+```bash
+bun run evidence:screenshots
+```
+
+Captura del historial de Copilot/OpenCode:
+
+- Toma un screenshot de la conversacion/historial y agregalo al repo en `docs/screenshots/04-historial-copilot.png`.
+
+## Despliegue con ngrok (demo en clase)
+
+Requisitos:
+
+- Tener backend corriendo en `3001` (`bun run dev:server` o `bun run dev`).
+- Instalar ngrok y autenticarlo:
+
+```bash
+ngrok config add-authtoken <TU_TOKEN>
+```
+
+### Opcion recomendada (plan free): 1 solo tunel
+
+En plan free, lo mas estable es exponer solo frontend y enrutar API por proxy `/api`.
+
+1. Levantar frontend de demo con API relativa:
+
+```bash
+cd client
+set VITE_API_BASE=/api
+bun run dev -- --port 5174
+```
+
+2. Exponer frontend:
+
+```bash
+ngrok http 5174
+```
+
+3. Compartir la URL HTTPS de ngrok (ejemplo):
+
+```text
+https://tu-subdominio.ngrok-free.dev
+```
+
+Notas:
+
+- El frontend usa `/api` y Vite lo proxya a `http://localhost:3001`.
+- La ruta `https://tu-subdominio.ngrok-free.dev/api/auth/me` debe responder `401` sin token (eso confirma que API publica funciona).
+
+### Verificar tuneles activos
+
+```bash
+Invoke-RestMethod -Uri http://127.0.0.1:4040/api/tunnels
+```
+
+### Detener demo
+
+- Cerrar terminal de ngrok (`Ctrl + C`).
+- Cerrar terminal de Vite demo (`Ctrl + C`).
 
 ## Notas
 

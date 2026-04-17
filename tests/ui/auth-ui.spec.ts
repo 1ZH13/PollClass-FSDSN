@@ -15,6 +15,8 @@ test('auth UI: bloquea credenciales inválidas y registro duplicado', async ({ p
   await expect(page.getByText('Credenciales inválidas.')).toBeVisible();
 
   await switchToRegisterMode(page);
+  await page.getByPlaceholder('Tu nombre').fill('Estudiante');
+  await page.getByPlaceholder('Tu apellido').fill('Repetido');
   await page.getByPlaceholder('tucorreo@dominio.com').fill(email);
   await page.getByPlaceholder('Contraseña segura').fill(password);
   await page.getByText('Estudiante', { exact: true }).click();

@@ -10,6 +10,8 @@ export async function switchToRegisterMode(page: Page) {
 export async function register(page: Page, email: string, password: string, role: 'professor' | 'student') {
   await page.goto('/auth');
   await switchToRegisterMode(page);
+  await page.getByPlaceholder('Tu nombre').fill(role === 'professor' ? 'Profesor' : 'Estudiante');
+  await page.getByPlaceholder('Tu apellido').fill('Demo');
   await page.getByPlaceholder('tucorreo@dominio.com').fill(email);
   await page.getByPlaceholder('Contraseña segura').fill(password);
   await page.getByText(role === 'professor' ? 'Profesor' : 'Estudiante', { exact: true }).click();

@@ -123,7 +123,10 @@ function ProfessorPoll() {
                   {votes.map((vote) => (
                     <div key={vote._id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-semibold text-slate-900">{vote.voterEmail}</p>
+                        <div>
+                          <p className="font-semibold text-slate-900">{vote.voterName || vote.voterEmail}</p>
+                          <p className="text-xs text-slate-500">{vote.voterEmail}</p>
+                        </div>
                         <span className="rounded-full bg-sky-100 px-3 py-1 text-sm text-sky-700">{pollData.options[vote.optionIndex]?.text || 'Opción inválida'}</span>
                       </div>
                     </div>

@@ -7,6 +7,17 @@ export async function votesHandler(req) {
   const path = url.pathname;
   const segments = path.split('/').filter(Boolean);
 
+  function resolveVoterName(user) {
+    const first = String(user?.firstName || '').trim();
+    const last = String(user?.lastName || '').trim();
+    const full = `${first} ${last}`.trim();
+    if (full) {
+      return full;
+    }
+    const email = String(user?.email || '').trim();
+    return email.split('@')[0] || email;
+  }
+
   if (segments.length === 4 && segments[1] === 'polls' && segments[3] === 'vote' && req.method === 'POST') {
     const user = await getUserFromRequest(req);
     if (!user) {
@@ -51,6 +62,7 @@ export async function votesHandler(req) {
       pollId,
       optionIndex,
       voterEmail,
+      voterName: resolveVoterName(user),
       createdAt: new Date(),
     };
 

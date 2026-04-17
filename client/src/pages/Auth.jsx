@@ -9,6 +9,8 @@ function Auth() {
   const initialRole = searchParams.get('role') || 'student';
   const [mode, setMode] = useState(initialMode);
   const [role, setRole] = useState(initialRole);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -30,12 +32,23 @@ function Auth() {
       return;
     }
 
+    if (mode === 'register' && (!firstName.trim() || !lastName.trim())) {
+      setError('Ingresa nombre y apellido para registrarte.');
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = {
         email: email.trim().toLowerCase(),
         password,
-        ...(mode === 'register' ? { role } : {}),
+        ...(mode === 'register'
+          ? {
+              role,
+              firstName: firstName.trim(),
+              lastName: lastName.trim(),
+            }
+          : {}),
       };
       const result = mode === 'register' ? await auth.register(payload) : await auth.login(payload);
       setUser(result.user);
@@ -95,6 +108,32 @@ function Auth() {
                 type="password"
               />
             </div>
+
+            {mode === 'register' && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-200">Nombre</label>
+                  <input
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full rounded-3xl border border-white/10 bg-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-400 focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-300/20"
+                    placeholder="Tu nombre"
+                    type="text"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-200">Apellido</label>
+                  <input
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full rounded-3xl border border-white/10 bg-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-400 focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-300/20"
+                    placeholder="Tu apellido"
+                    type="text"
+                  />
+                </div>
+              </div>
+            )}
+
             {mode === 'register' && (
               <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
                 <p className="text-sm font-medium text-slate-200">Rol</p>

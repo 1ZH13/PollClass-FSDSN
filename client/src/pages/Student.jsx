@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import JoinPoll from '../components/JoinPoll.jsx';
 import VoteForm from '../components/VoteForm.jsx';
 import { polls } from '../services/api.js';
@@ -7,7 +7,6 @@ import { AuthContext } from '../context/AuthContext.jsx';
 
 function Student() {
   const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
   const [step, setStep] = useState('join');
   const [poll, setPoll] = useState(null);
   const [message, setMessage] = useState('');
@@ -72,31 +71,11 @@ function Student() {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-slate-100 p-6">
-        <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-10 shadow-xl">
-          <h1 className="text-2xl font-bold text-slate-900">Necesitas iniciar sesión</h1>
-          <p className="mt-3 text-slate-600">Regístrate o inicia sesión con un correo para unirte a una encuesta.</p>
-          <button onClick={() => navigate('/auth')} className="mt-6 rounded-3xl bg-emerald-600 px-6 py-3 text-white hover:bg-emerald-700">
-            Ir a autenticación
-          </button>
-        </div>
-      </div>
-    );
+    return <Navigate replace to="/auth" />;
   }
 
   if (user.role !== 'student') {
-    return (
-      <div className="min-h-screen bg-slate-100 p-6">
-        <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-10 shadow-xl">
-          <h1 className="text-2xl font-bold text-slate-900">Acceso no autorizado</h1>
-          <p className="mt-3 text-slate-600">Debes iniciar sesión como estudiante para votar.</p>
-          <Link to="/auth" className="mt-6 inline-flex rounded-3xl bg-sky-600 px-6 py-3 text-white hover:bg-sky-700">
-            Cambiar a estudiante
-          </Link>
-        </div>
-      </div>
-    );
+    return <Navigate replace to="/professor" />;
   }
 
   return (
@@ -117,7 +96,7 @@ function Student() {
               <p className="text-slate-600">Encuesta:</p>
               <h2 className="text-2xl font-semibold text-slate-900">{poll.title}</h2>
               <p className="text-slate-500">Código: <span className="font-semibold">{poll.code}</span></p>
-              <p className="text-slate-500">Correo: <span className="font-semibold">{user.email}</span></p>
+              <p className="text-slate-500">Usuario: <span className="font-semibold">{user.fullName || user.email}</span></p>
             </div>
             <VoteForm options={poll.options} onVote={handleVote} loading={loading} />
           </div>
@@ -152,7 +131,11 @@ function Student() {
                 <ul className="mt-3 space-y-2">
                   {results.votes.map((vote) => (
                     <li key={vote._id} className="rounded-3xl border border-slate-200 bg-white p-3">
-                      <span className="font-medium text-slate-900">{vote.voterEmail}</span> — {results.poll.options[vote.optionIndex]?.text || 'Opción inválida'}
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium text-slate-900">{vote.voterName || vote.voterEmail}</span>
+                        <span className="text-xs text-slate-500">{vote.voterEmail}</span>
+                        <span>{results.poll.options[vote.optionIndex]?.text || 'Opción inválida'}</span>
+                      </div>
                     </li>
                   ))}
                 </ul>

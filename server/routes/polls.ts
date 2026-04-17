@@ -21,7 +21,12 @@ export async function pollsHandler(req) {
   const segments = path.split('/').filter(Boolean);
 
   if (req.method === 'GET' && segments.length === 2) {
-    const list = await polls.find().sort({ createdAt: -1 }).toArray();
+    const user = await getUserFromRequest(req);
+    if (!user || user.role !== 'professor') {
+      return jsonResponse({ message: 'No autorizado.' }, 401);
+    }
+
+    const list = await polls.find({ createdByEmail: String(user.email).toLowerCase() }).sort({ createdAt: -1 }).toArray();
     return jsonResponse(serializeDocs(list));
   }
 
@@ -46,6 +51,8 @@ export async function pollsHandler(req) {
       options: options.map((text) => ({ text, votes: 0 })),
       code: await createUniqueCode(),
       status: 'active',
+      createdByEmail: String(user.email).toLowerCase(),
+      createdByName: String(user.fullName || user.email || '').trim(),
       createdAt: new Date(),
     };
 
@@ -89,13 +96,13 @@ export async function pollsHandler(req) {
     }
 
     const updated = await polls.findOneAndUpdate(
-      { _id: pollId },
+      { _id: pollId, createdByEmail: String(user.email).toLowerCase() },
       { $set: { status: 'closed', closedAt: new Date() } },
       { returnDocument: 'after' }
     );
 
     if (!updated.value) {
-      return jsonResponse({ message: 'Poll not found.' }, 404);
+      return jsonResponse({ message: 'Poll not found or not owned by this professor.' }, 404);
     }
 
     return jsonResponse(serializeDoc(updated.value));
@@ -112,9 +119,9 @@ export async function pollsHandler(req) {
       return jsonResponse({ message: 'Poll not found.' }, 404);
     }
 
-    const deleted = await polls.deleteOne({ _id: pollId });
+    const deleted = await polls.deleteOne({ _id: pollId, createdByEmail: String(user.email).toLowerCase() });
     if (deleted.deletedCount === 0) {
-      return jsonResponse({ message: 'Poll not found.' }, 404);
+      return jsonResponse({ message: 'Poll not found or not owned by this professor.' }, 404);
     }
 
     return jsonResponse({ message: 'Poll deleted.' });
