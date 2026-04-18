@@ -1,123 +1,169 @@
-# PollClass-FSDSN — Sistema de Encuestas en Vivo
+# PollClass-FSDSN
 
-## Resumen
+Sistema de encuestas en vivo para aula, desarrollado como aplicación full stack con React + Bun + MongoDB.
 
-PollClass-FSDSN es una aplicación full stack para crear encuestas en tiempo real durante la clase. El profesor crea encuestas, comparte un código con los estudiantes y los resultados se actualizan mediante polling HTTP.
+## Demo en vivo (ngrok)
 
-Esta versión usa Bun puro en el backend y MongoDB con el driver oficial, sin Hono ni Mongoose.
+Acceso público para evaluación funcional del sistema.
 
-## Stack
+- URL pública actual: **https://buckshot-tadpole-gecko.ngrok-free.dev**
+- Frontend: https://buckshot-tadpole-gecko.ngrok-free.dev
+- API health simple: https://buckshot-tadpole-gecko.ngrok-free.dev/api/auth/me (debe responder 401 sin token)
+
+> Nota: este dominio es reservado y depende de una sesión activa de ngrok. Si no hay endpoint activo, la URL no responderá.
+
+## Resumen ejecutivo
+
+PollClass-FSDSN es una plataforma de encuestas en vivo orientada a dinámicas de clase. Permite crear votaciones, compartir código de acceso a estudiantes y visualizar resultados en tiempo real mediante polling HTTP.
+
+Perfiles soportados:
+
+- Profesor: crea, monitorea, cierra y elimina encuestas.
+- Estudiante: ingresa por código, vota y consulta resultados.
+
+## Descripción del proyecto
+
+PollClass-FSDSN permite que un profesor cree encuestas durante clase y que estudiantes voten con un código de acceso. Los resultados se actualizan en tiempo real mediante polling HTTP (sin WebSockets).
+
+## Objetivos de diseño
+
+- Flujo simple de uso en aula para profesor y estudiante.
+- Integridad de datos con validación de voto único por estudiante y encuesta.
+- Arquitectura ligera y mantenible sobre Bun + MongoDB.
+- Compatibilidad responsive para votación desde dispositivos móviles.
+
+## Stack tecnológico
 
 - Frontend: React + Vite
-- Backend: Bun nativo
+- Backend: Bun nativo (Bun.serve)
 - Base de datos: MongoDB (driver oficial)
-- Estilos: Tailwind CSS
+- UI: Tailwind CSS
 - Gráficos: Recharts
+- Testing E2E/API/UI: Playwright
 
-## Estructura del proyecto
+## Arquitectura
 
-- `client/` — aplicación React
-- `server/` — API Bun con rutas nativas y acceso directo a MongoDB
-- `.env.example` — ejemplo de configuración de entorno
-- `.gitignore` — archivos y carpetas ignoradas
+1. Cliente React consume API REST del backend.
+2. Backend Bun enruta peticiones y aplica reglas de negocio por rol.
+3. MongoDB persiste usuarios, encuestas y votos.
+4. Profesor y estudiante refrescan resultados con `setInterval`.
 
-## Requisitos previos
+## Estructura del repositorio
 
-- Bun instalado y disponible en el PATH
-- MongoDB accesible (local o Atlas)
-- Git instalado
+```text
+PollClass-FSDSN/
+├── client/                  # Aplicación React (Vite + Tailwind)
+│   └── src/
+│       ├── components/      # Formularios y tarjetas de encuesta
+│       ├── context/         # AuthContext
+│       ├── pages/           # Landing, Auth, Professor, ProfessorPoll, Student
+│       └── services/        # Cliente API y servicios de auth
+├── server/                  # API Bun + MongoDB
+│   ├── config/              # Conexión e índices Mongo
+│   ├── middleware/          # Auth por Bearer token
+│   ├── routes/              # Auth, Polls, Votes
+│   └── index.ts             # Entrada principal Bun.serve
+├── tests/                   # Pruebas Playwright API y UI
+├── docs/screenshots/        # Evidencias de funcionamiento
+├── playwright.config.ts
+└── README.md
+```
 
-## Configuración
+## Módulos funcionales
 
-1. Crear el archivo de entorno:
+### Profesor
+
+- Crear encuestas con título y opciones.
+- Visualizar listado de encuestas activas/cerradas.
+- Acceder a resultados en tiempo real con gráfico de barras.
+- Cerrar o eliminar encuestas.
+
+### Estudiante
+
+- Unirse por código alfanumérico de 6 caracteres.
+- Emitir voto en encuesta activa.
+- Visualizar resultados actualizados y tabla de votos.
+
+### Reglas de negocio
+
+- Una encuesta activa genera código único.
+- Voto único por estudiante por encuesta.
+- Encuestas cerradas no aceptan votos.
+- Control de acceso por rol (professor/student).
+
+## API principal
+
+### Auth
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+
+### Polls
+
+- `POST /api/polls`
+- `GET /api/polls`
+- `GET /api/polls/:id`
+- `GET /api/polls/code/:code`
+- `PATCH /api/polls/:id/close`
+- `DELETE /api/polls/:id`
+
+### Votes
+
+- `POST /api/polls/:id/vote`
+- `GET /api/polls/:id/results`
+
+## Configuración local
+
+### Requisitos
+
+- Bun instalado y accesible en PATH.
+- MongoDB local o remoto.
+
+### Variables de entorno
+
+Crear archivo `.env` en raíz desde `.env.example`.
 
 ```bash
 copy .env.example .env
 ```
 
-2. Ajustar `MONGODB_URI` si usas otro host.
+Valores esperados (ejemplo):
 
-3. Instalar dependencias:
-
-```bash
-bun install
-cd server && bun install
-cd ../client && bun install
+```env
+MONGODB_URI=mongodb://127.0.0.1:27017
+MONGODB_DB=pollclass
+PORT=3001
 ```
 
-## Ejecutar el proyecto
+### Instalación
 
-Con un solo comando desde la raiz:
+```bash
+bun run install-all
+```
+
+### Ejecución en desarrollo
 
 ```bash
 bun run dev
 ```
 
-Si necesitas correr por separado:
+Servicios locales:
 
-- Backend:
-  ```bash
-  bun run dev:server
-  ```
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3001/api
 
-- Frontend:
-  ```bash
-  bun run dev:client
-  ```
+## Publicación rápida con ngrok
 
-Luego abrir:
+Se recomienda exponer solo el frontend y usar proxy `/api` hacia backend local.
 
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:3001/api`
-
-## Endpoints principales
-
-- `POST /api/auth/register` — registrar usuario
-- `POST /api/auth/login` — iniciar sesión
-- `GET /api/auth/me` — obtener usuario autenticado
-- `POST /api/polls` — crear encuesta
-- `GET /api/polls` — listar encuestas
-- `GET /api/polls/:id` — obtener encuesta por ID
-- `GET /api/polls/code/:code` — buscar encuesta por código
-- `PATCH /api/polls/:id/close` — cerrar encuesta
-- `DELETE /api/polls/:id` — eliminar encuesta
-- `POST /api/polls/:id/vote` — registrar un voto
-- `GET /api/polls/:id/results` — obtener resultados actuales
-
-## Evidencias para entrega
-
-Capturas requeridas:
-
-- Landing: `docs/screenshots/01-landing.png`
-- Vista profesor: `docs/screenshots/02-vista-profesor.png`
-- Vista estudiante: `docs/screenshots/03-vista-estudiante.png`
-
-Generarlas automaticamente con Playwright:
+1. Ejecutar backend.
 
 ```bash
-bun run evidence:screenshots
+bun run dev:server
 ```
 
-Captura del historial de Copilot/OpenCode:
-
-- Toma un screenshot de la conversacion/historial y agregalo al repo en `docs/screenshots/04-historial-copilot.png`.
-
-## Despliegue con ngrok (demo en clase)
-
-Requisitos:
-
-- Tener backend corriendo en `3001` (`bun run dev:server` o `bun run dev`).
-- Instalar ngrok y autenticarlo:
-
-```bash
-ngrok config add-authtoken <TU_TOKEN>
-```
-
-### Opcion recomendada (plan free): 1 solo tunel
-
-En plan free, lo mas estable es exponer solo frontend y enrutar API por proxy `/api`.
-
-1. Levantar frontend de demo con API relativa:
+2. Levantar frontend en modo demo con API relativa.
 
 ```bash
 cd client
@@ -125,41 +171,41 @@ set VITE_API_BASE=/api
 bun run dev -- --port 5174
 ```
 
-2. Exponer frontend:
+3. Exponer frontend con ngrok.
 
 ```bash
-ngrok http 5174
+ngrok http --domain=buckshot-tadpole-gecko.ngrok-free.dev 5174
 ```
 
-3. Compartir la URL HTTPS de ngrok (ejemplo):
+4. Verificar que el endpoint quede activo en el panel de ngrok y confirmar acceso externo.
 
-```text
-https://tu-subdominio.ngrok-free.dev
-```
-
-Notas:
-
-- El frontend usa `/api` y Vite lo proxya a `http://localhost:3001`.
-- La ruta `https://tu-subdominio.ngrok-free.dev/api/auth/me` debe responder `401` sin token (eso confirma que API publica funciona).
-
-### Verificar tuneles activos
+Consulta de túneles activos:
 
 ```bash
 Invoke-RestMethod -Uri http://127.0.0.1:4040/api/tunnels
 ```
 
-### Detener demo
+## Calidad y pruebas
 
-- Cerrar terminal de ngrok (`Ctrl + C`).
-- Cerrar terminal de Vite demo (`Ctrl + C`).
+Ejecutar suite E2E/API/UI:
 
-## Notas
+```bash
+bun run test:e2e
+```
 
-- La validación asegura un solo voto por estudiante (`voterEmail`) por encuesta.
-- El login es role-agnóstico; el backend redirige según el rol guardado.
-- El registro pide el rol sólo una vez.
-- Las rutas de backend usan Bun y MongoDB directamente.
+Generar capturas de evidencia:
 
----
+```bash
+bun run evidence:screenshots
+```
 
-Esta implementación está lista y ya se ha empujado al remoto en la rama `main`.
+## Evidencias incluidas
+
+- Landing: `docs/screenshots/01-landing.png`
+- Vista profesor: `docs/screenshots/02-vista-profesor.png`
+- Vista estudiante: `docs/screenshots/03-vista-estudiante.png`
+- Historial OpenCode/Copilot: `docs/screenshots/04-historial-copilot.png`
+
+## Estado del proyecto
+
+Implementación completa de laboratorio práctico full stack con ejecución local, pruebas automatizadas y preparación para demostración pública mediante ngrok.
