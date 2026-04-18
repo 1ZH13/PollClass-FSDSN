@@ -205,6 +205,7 @@ bun run evidence:screenshots
 - Vista profesor: `docs/screenshots/02-vista-profesor.png`
 - Vista estudiante: `docs/screenshots/03-vista-estudiante.png`
 - Historial OpenCode/Copilot: `docs/screenshots/04-historial-copilot.png`
+- Bitacora agentica (Lab 5 - testing Playwright): `docs/bitacora-agentica-lab5.md`
 
 ## Estado del proyecto
 
